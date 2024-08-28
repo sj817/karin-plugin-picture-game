@@ -12,7 +12,7 @@ export const sendMsg = karin.command(/^#测试主动消息$/, async (e) => {
   const contact = e.contact
 
   /** 发送内容 */
-  const message = segment.text('\n这是一条主动消息，10秒后自动撤回~')
+  const message = [segment.text('\n这是一条主动消息，10秒后自动撤回~')]
 
   /** 发送消息 */
   const { message_id } = await Bot.sendMsg(uid, contact, message, { recallMsg: 10 })
