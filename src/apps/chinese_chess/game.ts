@@ -30,21 +30,19 @@ class FEN {
     this.round = fenArr[5].match(/\d+/) ? parseInt(fenArr[5]) : 0
     this.board = fenArr[0].split('/').map((row) => {
       const rowArr: string[] = []
-      let i = 0
-      while (i < row.length) {
+      for (let i = 0; i < row.length; i++) {
         const char = row[i]
-
         if (char >= '1' && char <= '9') {
           // 数字字符表示空位数
           const emptySpaces = parseInt(char, 10)
           for (let j = 0; j < emptySpaces; j++) {
-            rowArr.push(' ') // 用空格表示空位
+            // 用空格表示空位
+            rowArr.push(' ')
           }
         } else {
           // 非数字字符表示棋子
           rowArr.push(char)
         }
-        i++
       }
       return rowArr
     })
