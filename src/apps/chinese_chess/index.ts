@@ -61,8 +61,8 @@ export default class ChineseChess extends Plugin {
   };
 
   async test () {
-    const b64 = Canvas.test()
-    this.reply([segment.image('base64://' + b64)])
+    const board = new Game().getBoard()
+    this.reply([segment.image(Canvas.draw(board))])
     return true
   }
 

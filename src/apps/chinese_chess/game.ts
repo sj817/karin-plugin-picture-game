@@ -101,6 +101,10 @@ export default class Game {
     this.history.push(fen)
   }
 
+  public getBoard () {
+    return this.fen.getBoard()
+  }
+
   public setLastTime (time: number) {
     this.lastTime = time
   }
