@@ -2,7 +2,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 /** 当前文件的绝对路径 */
-const filePath = fileURLToPath(import.meta.url).replace(/\\/g, '/')
+const filePath = fileURLToPath(import.meta.url)
 /** 插件包绝对路径 */
 const dirPath = path.resolve(filePath, '../../../')
 /** 插件包的名称 */

@@ -25,6 +25,7 @@ export default class ChineseChess extends Plugin {
         }
       ],
     })
+    Canvas.init()
   }
 
   async join () {
@@ -60,7 +61,9 @@ export default class ChineseChess extends Plugin {
   };
 
   async test () {
-    this.reply([segment.image('base64://' + Canvas.test())])
+    const b64 = Canvas.test()
+    this.reply([segment.image('base64://' + b64)])
+    return true
   }
 
   private countDown (group: string, bot: KarinAdapter) {
