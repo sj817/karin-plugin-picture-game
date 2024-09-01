@@ -1,5 +1,6 @@
-import karin, { KarinAdapter, Plugin, segment } from 'node-karin'
+import { KarinAdapter, Plugin, segment } from 'node-karin'
 import Game from './game'
+import Canvas from './canvas'
 
 const games = new Map<string, Game>()
 
@@ -59,7 +60,7 @@ export default class ChineseChess extends Plugin {
   };
 
   async test () {
-
+    this.reply([segment.image('base64://' + Canvas.test())])
   }
 
   private countDown (group: string, bot: KarinAdapter) {

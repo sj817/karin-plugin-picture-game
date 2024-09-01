@@ -138,4 +138,4 @@ export default class Game {
   public getGameStatus () {
     return this.game
   }
-};
+}
