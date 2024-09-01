@@ -38,10 +38,36 @@ export default class Canvas {
   public static draw (board: string[][]): string {
     const bit = 64
     const bg = this.images.get('bg')!
-    const canvas = createCanvas(bit * 10, bit * 11)
+    const canvas = createCanvas(bit * 10, bit * 12)
     const ctx = canvas.getContext('2d')
-    ctx.drawImage(bg, 0, 0, bit * 10, bit * 11)
-    ctx.translate(bit / 2, bit / 2)
+    ctx.drawImage(bg, 0, 0, bit * 10, bit * 12)
+    // 画入通用坐标
+    // const str = 'ABCDEFGHIJ'
+    ctx.font = '30px sans-serif'
+    ctx.fillStyle = '#1e9eb3'
+    for (let i = 0; i < board.length; i++) {
+      const str = String(i)
+      const sy = bit * (11 - i) - 10
+      ctx.fillText(str, bit / 4, sy)
+      ctx.fillText(str, canvas.width - bit / 2, sy)
+    }
+    let str = ' ABCDEFGHIJ'
+    for (let i = 1; i <= board[0].length; i++) {
+      const text = str[i]
+      const sx = bit * i - 10
+      ctx.fillText(text, sx, bit)
+      ctx.fillText(text, sx, canvas.height - bit / 2)
+    }
+    // 画入专业术语坐标
+    ctx.fillStyle = '#f1441d'
+    str = ' 九八七六五四三二一'
+    for (let i = 1; i <= board[0].length; i++) {
+      const sx = bit * i - 10
+      ctx.fillText(String(i), sx, bit / 2)
+      ctx.fillText(str[i], sx - 5, canvas.height - 5)
+    }
+    // 移动初始位置
+    ctx.translate(bit / 2, bit)
     for (let i = 0; i < board.length; i++) {
       for (let j = 0; j < board[i].length; j++) {
         const char = board[i][j]
