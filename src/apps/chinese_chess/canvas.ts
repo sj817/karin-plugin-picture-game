@@ -62,9 +62,8 @@ export default class Canvas {
     ctx.fillStyle = '#f1441d'
     str = ' 九八七六五四三二一'
     for (let i = 1; i <= board[0].length; i++) {
-      const sx = bit * i - 10
-      ctx.fillText(String(i), sx, bit / 2)
-      ctx.fillText(str[i], sx - 5, canvas.height - 5)
+      ctx.fillText(String(i), bit * i - 10, bit / 2)
+      ctx.fillText(str[i], bit * i - 15, canvas.height - 5)
     }
     // 移动初始位置
     ctx.translate(bit / 2, bit)
@@ -80,14 +79,5 @@ export default class Canvas {
     // const img = this.images.get('r')!
     // ctx.drawImage(img, 0, 0, bit, bit)
     return 'base64://' + canvas.toBuffer().toString('base64')
-  }
-
-  public static test () {
-    const image = this.images.get('r')!
-    const canvas = createCanvas(image.width, image.height)
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(image, 0, 0)
-    // const ctx = canvas.getContext('2d')
-    return canvas.toBuffer().toString('base64')
   }
 }
