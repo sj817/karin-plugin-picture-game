@@ -1,7 +1,7 @@
 import PositionStruct from './PositionStruct'
 
-type index = [x:number, y:number]
-type move = [moveX: number, moveY: number]
+export type index = [x:number, y:number]
+export type move = [moveX: number, moveY: number]
 
 export default class Move {
   private readonly fnc = [this.rookMove, this.knightMove, this.cannonMove, this.bishopMove, this.pawnMove, this.advisorMove, this.kingMove]
@@ -13,11 +13,21 @@ export default class Move {
     this.squares = arr.map(value => value === 1 ? arrBoard[i++] : value)
   }
 
-  public checkMove (position: index, move: move) : boolean {
+  public checkMove (position: index, move: move) {
+    const index = position[0] * 16 + position[1]
+    const piece = this.squares[index]
+    const to = index + move[0] * 16 + move[1]
+    if (piece === ' ' || typeof piece === 'number') return false
     for (const fn of this.fnc) {
-      if (fn(position, move)) return true
+      const result = fn(position, move)
+      if (result) {
+        const eat = this.checkPiece(to)
+        this.squares[index] = ' '
+        this.squares[to] = piece
+        return { result, eat }
+      }
     }
-    return false
+    return { result: false, eat: false }
   }
 
   // 兵移动判断
