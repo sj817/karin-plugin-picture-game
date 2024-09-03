@@ -1,6 +1,7 @@
 import { KarinAdapter, Plugin, segment } from 'node-karin'
 import Game from './game'
 import Canvas from './canvas'
+import Move from './move'
 
 const games = new Map<string, Game>()
 
@@ -20,7 +21,7 @@ export default class ChineseChess extends Plugin {
           fnc: 'join'
         },
         {
-          reg: /^test$/,
+          reg: /^test -?[0-9]+ -?[0-9]+$/,
           fnc: 'test'
         }
       ],
@@ -61,9 +62,7 @@ export default class ChineseChess extends Plugin {
   };
 
   async test () {
-    const board = new Game().getBoard()
-    this.reply([segment.image(Canvas.draw(board))])
-    return true
+    
   }
 
   private countDown (group: string, bot: KarinAdapter) {
