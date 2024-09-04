@@ -43,10 +43,6 @@ export default class ChineseChess extends Plugin {
           reg: /^认输$/,
           fnc: 'over'
         },
-        {
-          reg: /^test([a-iA-I])([0-9])([a-iA-I])([0-9])$/,
-          fnc: 'test'
-        }
       ],
     })
     Canvas.init()
@@ -255,27 +251,6 @@ export default class ChineseChess extends Plugin {
     this.reply('欢迎来到中国象棋', { reply: true })
     return true
   };
-
-  async test () {
-    const msg = this.e.msg.substring(4).toUpperCase()
-    let game = games.get(this.e.group_id)
-    if (!game) {
-      game = new Game()
-      games.set(this.e.group_id, game)
-    }
-    const y = msg.charCodeAt(0) - 'A'.charCodeAt(0)
-    const x = Math.abs(msg.charCodeAt(1) - '0'.charCodeAt(0) - 9)
-    const ty = msg.charCodeAt(2) - 'A'.charCodeAt(0) - y
-    const tx = Math.abs(msg.charCodeAt(3) - '0'.charCodeAt(0) - 9) - x
-    if (game.move([x, y], [tx, ty])) {
-      const board = game.getBoard()
-      const img = Canvas.draw(board)
-      await this.reply(segment.image(img))
-    } else {
-      this.reply('无法做出对应舞步', { reply: true })
-    }
-    return true
-  }
 
   private countDown (group: string, bot: KarinAdapter) {
     setTimeout(async () => {
