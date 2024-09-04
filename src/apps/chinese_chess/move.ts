@@ -13,11 +13,13 @@ export default class Move {
     this.squares = arr.map(value => value === 1 ? arrBoard[i++] : value)
   }
 
-  public checkMove (position: index, move: move) {
+  public checkMove (color: 'w' | 'b', position: index, move: move) {
     const index = position[0] * 16 + position[1]
     const piece = this.squares[index]
     const to = index + move[0] * 16 + move[1]
     if (piece === ' ' || typeof piece === 'number') return { result: false, eat: false }
+    const pieceColor = piece.toUpperCase() === piece ? 'b' : 'w'
+    if (pieceColor !== color) return { result: false, eat: false }
     for (const fn of this.fnc) {
       const result = fn(index, to)
       if (result) {

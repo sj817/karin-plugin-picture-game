@@ -1,32 +1,14 @@
 import Move, { index, move } from './move'
 
 export default class FEN {
-  readonly chess: { [key: string]: string }
   readonly move: Move
 
   private board: string[][]
-  private color: 'w' | 'b' = 'b'
-  private history: string[] = []
+  private color: 'w' | 'b' = 'w'
   private moveSum: number = 0
   private roundSum: number = 0
 
   constructor (FEN: string) {
-    this.chess = {
-      r: '车',
-      n: '马',
-      b: '象',
-      a: '士',
-      k: '将',
-      p: '兵',
-      c: '炮',
-      R: '車',
-      N: '馬',
-      B: '象',
-      A: '士',
-      K: '帅',
-      P: '卒',
-      C: '砲'
-    }
     const fenArr = FEN.split(' ')
     this.color = fenArr[1] === 'b' ? 'b' : 'w'
     this.moveSum = fenArr[4].match(/\d+/) ? parseInt(fenArr[4]) : 0
@@ -53,9 +35,12 @@ export default class FEN {
   }
 
   public checkMove (position: index, move: move) {
-    const res = this.move.checkMove(position, move)
-    if (res) {
+    const res = this.move.checkMove(this.color, position, move)
+    if (res.result) {
       this.board = this.move.getBoard()
+      this.color = this.color === 'w' ? 'b' : 'w'
+      this.moveSum = res.eat ? 0 : this.moveSum + 1
+      this.roundSum++
       return true
     } else {
       return false
@@ -85,6 +70,6 @@ export default class FEN {
       }
       return row.filter((value) => value !== ' ').join('')
     }).join('/')
-    return `${boardStr} ${this.color} - - ${this.moveSum} ${this.roundSum}`
+    return `${boardStr} ${this.color} - - ${this.moveSum} ${Math.trunc(this.roundSum / 2)}`
   }
 }
