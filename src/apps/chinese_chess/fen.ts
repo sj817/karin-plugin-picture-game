@@ -34,7 +34,8 @@ export default class FEN {
     this.move = new Move(this.board)
   }
 
-  public checkMove (position: index, move: move) {
+  public checkMove (color: 'w' | 'b', position: index, move: move) {
+    if (color !== this.color) return false
     const res = this.move.checkMove(this.color, position, move)
     if (res.result) {
       this.board = this.move.getBoard()

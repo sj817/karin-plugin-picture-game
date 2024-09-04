@@ -1,6 +1,8 @@
 import FEN from './fen'
 import { index, move } from './move'
 
+type rod = { retract: boolean, sue: boolean }
+
 export default class Game {
   // https://www.xqbase.com/protocol/cchess_fen.htm
   readonly initialFEN: string = 'rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 0'
@@ -18,31 +20,86 @@ export default class Game {
   // 悔棋
   private retract = false
   // 求和
-  private draw = false
-  // 对手是否申请过悔棋或者和棋
-  private rod = false
+  private sue = false
+  // 是否处理过悔棋或求和
+
+  private rod: rod = { retract: false, sue: false }
+  // 记录红方
+  private red?: string
 
   constructor (fen: string = this.initialFEN) {
     this.fen = new FEN(fen)
     this.history.push(fen)
   }
 
-  public move (position: index, move: move): boolean {
+  public regret () {
+    const oldFen = this.history.pop()!
+    this.retract = false
+    this.retract = false
+    this.sue = false
+    this.clearRod()
+    this.nextPlayer()
+    this.lastTime = Date.now()
+    this.fen = new FEN(oldFen)
+  }
+
+  public move (qq: string, position: index, move: move): boolean {
     position[0] += 3
     position[1] += 3
-    const result = this.fen.checkMove(position, move)
-    if (result) {
+    if (this.fen.checkMove(this.red === qq ? 'w' : 'b', position, move)) {
       this.history.push(this.fen.toString())
       this.retract = false
       this.retract = false
-      this.draw = false
-      this.rod = false
+      this.sue = false
+      this.clearRod()
       this.nextPlayer()
       this.lastTime = Date.now()
       return true
     } else {
       return false
     }
+  }
+
+  public getRod (key: keyof rod): boolean {
+    return this.rod[key]
+  }
+
+  public setRod (key: keyof rod) {
+    this.rod[key] = true
+  }
+
+  private clearRod () {
+    this.rod = { retract: false, sue: false }
+  }
+
+  public getSue (): boolean {
+    return this.sue
+  }
+
+  public setSue (): void {
+    this.sue = true
+  }
+
+  public getRetract (): boolean {
+    return this.retract
+  }
+
+  public setRetract (): void {
+    this.retract = true
+  }
+
+  public setRed (qq: string) {
+    if (this.red !== undefined) return
+    this.red = qq
+    this.player = this.playerInfo[0] === qq ? 1 : 0
+  }
+
+  public getHistoryLength () {
+    return this.history.length
+  }
+
+  public checkPlayer (qq: string) {
+    return this.playerInfo.includes(qq)
   }
 
   public getBoard () {

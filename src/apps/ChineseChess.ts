@@ -1,4 +1,4 @@
-import { KarinAdapter, KarinElement, Plugin, segment } from 'node-karin'
+import { KarinAdapter, Plugin, segment } from 'node-karin'
 import Game from './chinese_chess/game'
 import Canvas from './chinese_chess/canvas'
 
@@ -24,6 +24,26 @@ export default class ChineseChess extends Plugin {
           fnc: 'coordinatesMove'
         },
         {
+          reg: /^悔棋$/,
+          fnc: 'regret'
+        },
+        {
+          reg: /^求和$/,
+          fnc: 'sue'
+        },
+        {
+          reg: /^同意$/,
+          fnc: 'agree'
+        },
+        {
+          reg: /^拒绝$/,
+          fnc: 'refuse'
+        },
+        {
+          reg: /^认输$/,
+          fnc: 'over'
+        },
+        {
           reg: /^test([a-iA-I])([0-9])([a-iA-I])([0-9])$/,
           fnc: 'test'
         }
@@ -32,16 +52,164 @@ export default class ChineseChess extends Plugin {
     Canvas.init()
   }
 
+  async over () {
+    const game = games.get(this.e.group_id)
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
+      return false
+    }
+    const rival = game.getPlayerInfo(0) === qq ? 1 : 0
+    const message = [
+      segment.text('你觉得对方更胜一筹，自愿退出舞台\n'),
+      segment.at(game.getPlayerInfo(rival)),
+      segment.text(' 你赢了')
+    ]
+    games.delete(this.e.group_id)
+    this.reply(message, { reply: true })
+  }
+
+  async refuse () {
+    const game = games.get(this.e.group_id)
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
+      return false
+    }
+    if (game.getPlayerInfo() !== qq) {
+      return false
+    }
+    let msg
+    if (game.getRetract() && !game.getRod('retract')) {
+      game.setRod('retract')
+      msg = '你的对手拒绝了你的重演请求\n'
+    } else if (game.getSue() && !game.getRod('sue')) {
+      game.setRod('sue')
+      msg = '对方暂时不认可你的舞技\n'
+    }
+    if (msg !== undefined) {
+      const rival = game.getPlayer() === 0 ? 1 : 0
+      const message = [
+        segment.at(game.getPlayerInfo(rival)),
+        segment.text(msg),
+        segment.at(qq),
+        segment.text('\n请继续你的表演')
+      ]
+      await this.reply(message, { reply: true })
+      return true
+    }
+    return false
+  }
+
+  async agree () {
+    const game = games.get(this.e.group_id)
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
+      return false
+    }
+    if (game.getPlayerInfo() !== qq) {
+      return false
+    }
+    if (game.getRetract() && !game.getRod('retract')) {
+      game.regret()
+      const message = [
+        segment.text('你同意了对手的重赛请求\n'),
+        segment.image(Canvas.draw(game.getBoard())),
+        segment.text('\n'),
+        segment.at(game.getPlayerInfo()),
+        segment.text('\n'),
+        segment.text('\n请开始你的表演')
+      ]
+      await this.reply(message, { reply: true })
+      return true
+    }
+    if (game.getSue() && !game.getRod('sue')) {
+      games.delete(this.e.group_id)
+      this.reply('你认可了对方，演出结束', { reply: true })
+      return true
+    }
+    return false
+  }
+
+  async sue () {
+    const game = games.get(this.e.group_id)
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
+      return false
+    }
+    if (game.getPlayerInfo() !== qq) {
+      if (game.getSue()) {
+        this.reply('心急吃不了热豆腐，你已经向对手发起过请求了哦', { reply: true })
+        return true
+      }
+      game.setSue()
+      const message = [
+        segment.at(game.getPlayerInfo()),
+        segment.text('\n你的对手觉得你是一个旗鼓相当的对手，想要和解，是否同意？\n\n同意|拒绝'),
+      ]
+      this.reply(message)
+      return true
+    }
+    return false
+  }
+
+  async regret () {
+    const game = games.get(this.e.group_id)
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
+      return false
+    }
+    if (game.getPlayerInfo() !== qq) {
+      if (game.getRetract()) {
+        this.reply('心急吃不了热豆腐，你已经向对手发起过请求了哦', { reply: true })
+        return true
+      }
+      game.setRetract()
+      const message = [
+        segment.at(game.getPlayerInfo()),
+        segment.text('\n你的对手觉得刚刚的舞姿不够优雅，想要重新表演，是否同意？\n\n同意|拒绝'),
+      ]
+      this.reply(message)
+      return true
+    }
+    return false
+  }
+
   async coordinatesMove () {
     const msg = this.e.msg.toUpperCase()
     const game = games.get(this.e.group_id)
-    if (!game || !game.getGameStatus()) {
+    const qq = this.e.user_id
+    if (!game || !game.getGameStatus() || !game.checkPlayer(qq)) {
       return false
+    }
+    if (game.getHistoryLength() === 1) { game.setRed(qq) }
+    if (game.getPlayerInfo() !== qq) {
+      this.reply('心急吃不了热豆腐，现在不是你的表演时间哦', { reply: true })
+      return true
+    }
+    if (game.getRetract() && !game.getRod('retract')) {
+      this.reply('你的对手觉得刚刚的舞姿不够优雅，想要重新表演，是否同意？\n\n同意|拒绝', { reply: true })
+      return true
+    }
+    if (game.getSue() && !game.getRod('sue')) {
+      this.reply('你的对手觉得你是一个旗鼓相当的对手，想要和解，是否同意？\n\n同意|拒绝', { reply: true })
+      return true
     }
     const y = msg.charCodeAt(0) - 'A'.charCodeAt(0)
     const x = Math.abs(msg.charCodeAt(1) - '0'.charCodeAt(0) - 9)
     const ty = msg.charCodeAt(2) - 'A'.charCodeAt(0) - y
     const tx = Math.abs(msg.charCodeAt(3) - '0'.charCodeAt(0) - 9) - x
+    if (!game.move(qq, [x, y], [tx, ty])) {
+      this.reply('评委对你打出了0分，请重新表演', { reply: true })
+      return true
+    }
+    const message = [
+      segment.text('你过关！！\n'),
+      segment.image(Canvas.draw(game.getBoard())),
+      segment.text('\n'),
+      segment.at(game.getPlayerInfo()),
+      segment.text('\n'),
+      segment.text('\n请开始你的表演')
+    ]
+    await this.reply(message, { reply: true })
     return true
   }
 
