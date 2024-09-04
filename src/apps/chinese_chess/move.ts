@@ -4,7 +4,7 @@ export type index = [x:number, y:number]
 export type move = [moveX: number, moveY: number]
 
 export default class Move {
-  private readonly fnc = [this.rookMove, this.knightMove, this.cannonMove, this.bishopMove, this.pawnMove, this.advisorMove, this.kingMove]
+  private readonly fnc = [this.rookMove.bind(this), this.knightMove.bind(this), this.cannonMove.bind(this), this.bishopMove.bind(this), this.pawnMove.bind(this), this.advisorMove.bind(this), this.kingMove.bind(this)]
   private readonly squares
   constructor (board: string[][]) {
     const arr = PositionStruct.ucpcSquares
@@ -13,17 +13,23 @@ export default class Move {
     this.squares = arr.map(value => value === 1 ? arrBoard[i++] : value)
   }
 
-  public checkMove (color: 'w' | 'b', position: index, move: move) {
+  public checkMove (color: 'w' | 'b', position: index, move: move): { result: boolean, eat: boolean } {
     const index = position[0] * 16 + position[1]
     const piece = this.squares[index]
     const to = index + move[0] * 16 + move[1]
+    const toPiece = this.squares[to]
     if (piece === ' ' || typeof piece === 'number') return { result: false, eat: false }
     const pieceColor = piece.toUpperCase() === piece ? 'b' : 'w'
     if (pieceColor !== color) return { result: false, eat: false }
     for (const fn of this.fnc) {
       const result = fn(index, to)
       if (result) {
-        const eat = this.checkPiece(to)
+        const eat = (toPiece !== ' ' && typeof toPiece !== 'number')
+        if (eat) {
+          // 吃子,判断是不是自家的
+          const toPieceColor = toPiece.toUpperCase() === toPiece ? 'b' : 'w'
+          if (toPieceColor === color) return { result: false, eat: false }
+        }
         this.squares[index] = ' '
         this.squares[to] = piece
         return { result, eat }

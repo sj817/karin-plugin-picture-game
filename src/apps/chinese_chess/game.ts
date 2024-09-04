@@ -30,7 +30,19 @@ export default class Game {
   public move (position: index, move: move): boolean {
     position[0] += 3
     position[1] += 3
-    return this.fen.checkMove(position, move)
+    const result = this.fen.checkMove(position, move)
+    if (result) {
+      this.history.push(this.fen.toString())
+      this.retract = false
+      this.retract = false
+      this.draw = false
+      this.rod = false
+      this.nextPlayer()
+      this.lastTime = Date.now()
+      return true
+    } else {
+      return false
+    }
   }
 
   public getBoard () {
@@ -43,10 +55,6 @@ export default class Game {
 
   public getLastTime () {
     return this.lastTime
-  }
-
-  public getFEN () {
-    return this.fen
   }
 
   public nextPlayer () {
