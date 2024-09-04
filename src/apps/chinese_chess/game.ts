@@ -1,11 +1,14 @@
+import Move, { index, move } from './move'
+
 class FEN {
   readonly chess: { [key: string]: string }
+  readonly move: Move
 
   private board: string[][]
   private color: 'w' | 'b' = 'b'
   private history: string[] = []
-  private move: number = 0
-  private round: number = 0
+  private moveSum: number = 0
+  private roundSum: number = 0
 
   constructor (FEN: string) {
     this.chess = {
@@ -26,8 +29,8 @@ class FEN {
     }
     const fenArr = FEN.split(' ')
     this.color = fenArr[1] === 'b' ? 'b' : 'w'
-    this.move = fenArr[4].match(/\d+/) ? parseInt(fenArr[4]) : 0
-    this.round = fenArr[5].match(/\d+/) ? parseInt(fenArr[5]) : 0
+    this.moveSum = fenArr[4].match(/\d+/) ? parseInt(fenArr[4]) : 0
+    this.roundSum = fenArr[5].match(/\d+/) ? parseInt(fenArr[5]) : 0
     this.board = fenArr[0].split('/').map((row) => {
       const rowArr: string[] = []
       for (let i = 0; i < row.length; i++) {
@@ -46,6 +49,17 @@ class FEN {
       }
       return rowArr
     })
+    this.move = new Move(this.board)
+  }
+
+  public checkMove (position: index, move: move) {
+    const res = this.move.checkMove(position, move)
+    if (res) {
+      this.board = this.move.getBoard()
+      return true
+    } else {
+      return false
+    }
   }
 
   public getBoard () {
@@ -71,7 +85,7 @@ class FEN {
       }
       return row.filter((value) => value !== ' ').join('')
     }).join('/')
-    return `${boardStr} ${this.color} - - ${this.move} ${this.round}`
+    return `${boardStr} ${this.color} - - ${this.moveSum} ${this.roundSum}`
   }
 }
 
@@ -99,6 +113,12 @@ export default class Game {
   constructor (fen: string = this.initialFEN) {
     this.fen = new FEN(fen)
     this.history.push(fen)
+  }
+
+  public move (position: index, move: move): boolean {
+    position[0] += 3
+    position[1] += 3
+    return this.fen.checkMove(position, move)
   }
 
   public getBoard () {

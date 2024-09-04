@@ -17,9 +17,9 @@ export default class Move {
     const index = position[0] * 16 + position[1]
     const piece = this.squares[index]
     const to = index + move[0] * 16 + move[1]
-    if (piece === ' ' || typeof piece === 'number') return false
+    if (piece === ' ' || typeof piece === 'number') return { result: false, eat: false }
     for (const fn of this.fnc) {
-      const result = fn(position, move)
+      const result = fn(index, to)
       if (result) {
         const eat = this.checkPiece(to)
         this.squares[index] = ' '
@@ -31,11 +31,11 @@ export default class Move {
   }
 
   // 兵移动判断
-  public pawnMove (position: index, move: move) : boolean {
-    const index = position[0] * 16 + position[1]
+  public pawnMove (index: number, to: number) : boolean {
     const piece = this.squares[index]
     if (piece !== 'p' && piece !== 'P') return false
-    const to = index + move[0] * 16 + move[1]
+    // 移动判断
+    if (PositionStruct.PawnTab[to] === 0) return false
     // 获取过河判定位
     let river, retreat
     if (piece === 'p') {
@@ -50,52 +50,47 @@ export default class Move {
       // 没过河的兵，检测是否向前
       return to + retreat === index
     }
-    // 移动判断
-    if (PositionStruct.PawnTab[to] === 0) return false
     // 过河的兵，检测是否后退
     return to - retreat === index
   }
 
   // 炮移动判断
-  public cannonMove (position: index, move: move) : boolean {
-    const index = position[0] * 16 + position[1]
+  public cannonMove (index: number, to: number) : boolean {
     const piece = this.squares[index]
     if (piece !== 'c' && piece !== 'C') return false
     // 获取间隔棋子
-    const num = this.pieceNumber(index, move)
-    const to = index + move[0] * 16 + move[1]
+    const num = this.pieceNumber(index, to)
     if (num === 0) {
       // 为0判断落点是不是棋子
       return this.squares[to] === ' '
     }
     if (num === 1) {
-      // 为1判断落点是不是棋子
+      // 为1判断落点有没有棋子
       return this.checkPiece(to)
     }
     return false
   }
 
   // 将移动判断
-  public kingMove (position: index, move: move) : boolean {
-    const index = position[0] * 16 + position[1]
+  public kingMove (index: number, to: number) : boolean {
     const piece = this.squares[index]
     if (piece !== 'k' && piece !== 'K') return false
-    const to = index + move[0] * 16 + move[1]
     // 移动判断
     if (PositionStruct.KingArea[to] === 0) return false
     // 过河判断
     if (((index ^ to) & 0x80) === 0) return true
-    // 过河了，判断飞将
+    // 过河了
+    // 判断中间是否有棋子
+    if (this.pieceNumber(index, to) !== 0) return false
+    // 判断飞将
     const toPiece = this.squares[to]
-    return (toPiece === 'k' || toPiece !== 'K')
+    return (toPiece === 'k' || toPiece === 'K')
   }
 
   // 士移动判断
-  public advisorMove (position: index, move: move) : boolean {
-    const index = position[0] * 16 + position[1]
+  public advisorMove (index: number, to: number) : boolean {
     const piece = this.squares[index]
     if (piece !== 'a' && piece !== 'A') return false
-    const to = index + move[0] * 16 + move[1]
     // 移动判断
     if (PositionStruct.AdvisorArea[to] === 0) return false
     // 过河判断
@@ -103,37 +98,33 @@ export default class Move {
   }
 
   // 象移动判断
-  public bishopMove (position: index, move: move) {
-    const index = position[0] * 16 + position[1]
+  public bishopMove (index: number, to: number) {
     const piece = this.squares[index]
     if (piece !== 'b' && piece !== 'B') return false
-    let to = move[0] * 16 + move[1]
     // 移动判断
-    if (PositionStruct.ElephantLegTab[PositionStruct.index + to] === 0) return false
-    to = index + to
+    const leg = PositionStruct.ElephantLegTab[PositionStruct.index + to - index]
+    if (leg === 0) return false
     // 象眼判断
-    if (this.checkPiece(to)) return false
+    if (this.checkPiece(index + leg)) return false
     // 过河判断
     return ((index ^ to) & 0x80) === 0
   }
 
   // 马移动判断
-  public knightMove (position: index, move: move) {
-    const index = position[0] * 16 + position[1]
+  public knightMove (index: number, to: number) {
     const piece = this.squares[index]
     if (piece !== 'n' && piece !== 'N') return false
-    const to = move[0] * 16 + move[1]
+    to -= index
     const leg = PositionStruct.HorseLegTab[PositionStruct.index + to]
     if (leg === 0) return false
-    return this.checkPiece(index + leg)
+    return !this.checkPiece(index + leg)
   }
 
   // 车移动判断
-  public rookMove (position: index, move: move) {
-    const index = position[0] * 16 + position[1]
+  public rookMove (index: number, to: number) {
     const piece = this.squares[index]
     if (piece !== 'r' && piece !== 'R') return false
-    const num = this.pieceNumber(index, move)
+    const num = this.pieceNumber(index, to)
     return num === 0
   }
 
@@ -144,9 +135,10 @@ export default class Move {
   }
 
   // 检测到该位置中间有几个棋子
-  private pieceNumber (index: number, move: move) : number {
-    if (move[0] === 0 && move[1] === 0) return -1
-    // 因为只用来检测直线，所以move中必有一个为0
+  private pieceNumber (index: number, to: number) : number {
+    // 是否是直线移动
+    to -= index
+    const move = [Math.trunc(to / 16), to % 16]
     if (move[0] === 0) {
       const to = index + move[1]
       return move[1] > 0 ? this.moveX(index, to) : this.moveX(to, index)
