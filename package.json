@@ -29,7 +29,7 @@
   },
   "karin": {
     "apps": [
-      "lib/apps/chinese_chess"
+      "lib/apps"
     ],
     "outDir": "lib",
     "rootDir": "src"

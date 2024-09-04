@@ -1,8 +1,8 @@
 import { dirPath } from '@/utils'
 import { createCanvas, Image } from 'canvas'
+const images = new Map<string, Image>()
 
 export default class Canvas {
-  private static readonly images = new Map<string, Image>()
   // 小写黑方，大写红方
   private static readonly resources: { [key: string]: string } = {
     bg: 'bg.png',
@@ -25,11 +25,11 @@ export default class Canvas {
   }
 
   public static init () {
-    if (this.images.size === 0) {
-      const imagePath = dirPath + '/resources/image/'
+    if (images.size === 0) {
+      const imagePath = dirPath + '/resources/image/chinese_chess/'
       for (const key in this.resources) {
         const img = new Image()
-        img.onload = () => this.images.set(key, img)
+        img.onload = () => images.set(key, img)
         img.src = imagePath + this.resources[key]
       }
     }
@@ -37,7 +37,7 @@ export default class Canvas {
 
   public static draw (board: string[][]): string {
     const bit = 64
-    const bg = this.images.get('bg')!
+    const bg = images.get('bg')!
     const canvas = createCanvas(bit * 10, bit * 12)
     const ctx = canvas.getContext('2d')
     ctx.drawImage(bg, 0, 0, bit * 10, bit * 12)
@@ -71,7 +71,7 @@ export default class Canvas {
       for (let j = 0; j < board[i].length; j++) {
         const char = board[i][j]
         if (char !== ' ') {
-          const img = this.images.get(char)!
+          const img = images.get(char)!
           ctx.drawImage(img, j * bit, i * bit, bit, bit)
         }
       }
