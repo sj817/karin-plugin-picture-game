@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0 (2024-09-05)
+
+
+### Bug Fixes
+
+* 增加三分钟倒计时 ([5c7d744](https://github.com/pohgxz/karin-plugin-picture-game/commit/5c7d74484df699b1089da1ede71bbefaf932c1a6))
+
 ## [1.0.2](https://github.com/KarinJS/karin-plugin-template/compare/v1.0.1...v1.0.2) (2024-07-20)
 
 
