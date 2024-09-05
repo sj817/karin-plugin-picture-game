@@ -1,4 +1,4 @@
-import { KarinAdapter, Plugin, segment } from 'node-karin'
+import karin, { KarinAdapter, Plugin, segment } from 'node-karin'
 import Game from './chinese_chess/game'
 import Canvas from './chinese_chess/canvas'
 
@@ -254,51 +254,56 @@ export default class ChineseChess extends Plugin {
 
   private countDown (group: string, bot: KarinAdapter) {
     setTimeout(async () => {
-      // const game = games.get(group)
-      // if (game) {
-      //   const time = game.getLastTime()
-      //   const differ = Date.now() - time
-      //   if (differ > 60000 && differ < 61000) {
-      //     const contact = karin.contactGroup(group)
-      //     const elements = [
-      //       segment.at(qq),
-      //       segment.text(' 在本次中国象棋舞台中你的表演时间剩余2分钟')
-      //     ]
-      //     await bot.SendMessage(contact, elements)
-      //   } else if (differ > 120000 && differ < 121000) {
-      //     const contact = karin.contactGroup(group)
-      //     const elements = [
-      //       segment.at(qq),
-      //       segment.text(' 在本次中国象棋舞台中你的表演时间剩余1分钟')
-      //     ]
-      //     await bot.SendMessage(contact, elements)
-      //   } else if (differ > 150000 && differ < 151000) {
-      //     const contact = karin.contactGroup(group)
-      //     const elements = [
-      //       segment.at(qq),
-      //       segment.text(' 在本次中国象棋舞台中你的表演时间剩余30秒')
-      //     ]
-      //     await bot.SendMessage(contact, elements)
-      //   } else if (differ > 170000 && differ < 171000) {
-      //     const contact = karin.contactGroup(group)
-      //     const elements = [
-      //       segment.at(qq),
-      //       segment.text(' 在本次中国象棋舞台中你的表演时间剩余10秒')
-      //     ]
-      //     await bot.SendMessage(contact, elements)
-      //   } else if (differ > 180000) {
-      //     const contact = karin.contactGroup(group)
-      //     const elements = [
-      //       segment.at(qq),
-      //       segment.text(' 由于你灵感缺失无法做出对应舞步，表演结束')
-      //     ]
-      //     await bot.SendMessage(contact, elements)
-      //     games.delete(group)
-      //     return
-      //   }
-
-      //   this.countDown(group, bot)
-      // }
+      const game = games.get(group)
+      if (game) {
+        const time = game.getLastTime()
+        const differ = Date.now() - time
+        const qq = game.getPlayerInfo()
+        if (!game.getGameStatus()) {
+          if (differ > 180000) {
+            const contact = karin.contactGroup(group)
+            await bot.SendMessage(contact, [segment.text('中国象棋匹配时间超时，对局已结束')])
+          }
+        } else if (differ > 60000 && differ < 61000) {
+          const contact = karin.contactGroup(group)
+          const elements = [
+            segment.at(qq),
+            segment.text(' 在本次中国象棋舞台中你的表演时间剩余2分钟')
+          ]
+          await bot.SendMessage(contact, elements)
+        } else if (differ > 120000 && differ < 121000) {
+          const contact = karin.contactGroup(group)
+          const elements = [
+            segment.at(qq),
+            segment.text(' 在本次中国象棋舞台中你的表演时间剩余1分钟')
+          ]
+          await bot.SendMessage(contact, elements)
+        } else if (differ > 150000 && differ < 151000) {
+          const contact = karin.contactGroup(group)
+          const elements = [
+            segment.at(qq),
+            segment.text(' 在本次中国象棋舞台中你的表演时间剩余30秒')
+          ]
+          await bot.SendMessage(contact, elements)
+        } else if (differ > 170000 && differ < 171000) {
+          const contact = karin.contactGroup(group)
+          const elements = [
+            segment.at(qq),
+            segment.text(' 在本次中国象棋舞台中你的表演时间剩余10秒')
+          ]
+          await bot.SendMessage(contact, elements)
+        } else if (differ > 180000) {
+          const contact = karin.contactGroup(group)
+          const elements = [
+            segment.at(qq),
+            segment.text(' 由于你灵感缺失无法做出对应舞步，表演结束')
+          ]
+          await bot.SendMessage(contact, elements)
+          games.delete(group)
+          return
+        }
+        this.countDown(group, bot)
+      }
     }, 1000)
   }
 }
