@@ -1,4 +1,4 @@
-import { dirPath } from '@/utils'
+import { dirPath } from '@/utils/dir'
 import { createCanvas, Image } from 'canvas'
 const images = new Map<string, Image>()
 

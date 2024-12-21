@@ -11,3 +11,25 @@
 > - [ ] 五子棋
 > - [ ] 马拉喀什
 > - [ ] 斗地主
+
+## 安装
+
+```bash
+pnpm add karin-plugin-picture-game -w
+```
+
+## 开发
+
+> 单独一个文件夹！！！！！
+
+```bash
+git clone https://github.com/pohgxz/karin-plugin-picture-game
+```
+
+```bash
+pnpm i
+```
+
+```bash
+pnpm dev
+```
