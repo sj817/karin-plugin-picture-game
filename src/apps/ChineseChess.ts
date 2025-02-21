@@ -213,7 +213,13 @@ export const join = karin.command(/^加入中国象棋$/, async (e) => {
 
 // 菜单
 export const menu = karin.command(/^中国象棋$/, async (e) => {
-  await e.reply('欢迎来到中国象棋', { reply: true })
+  const msg = `欢迎来到中国象棋
+  象棋指令如下：
+  加入中国象棋
+  a1b1（走棋指令）
+  求和
+  认输`
+  await e.reply(msg, { reply: true })
   return true
 }, { name: '菜单', event: 'message.group' })
 
