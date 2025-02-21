@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/pohgxz/karin-plugin-picture-game/compare/v1.0.0...v1.0.1) (2025-02-21)
+
+
+### Bug Fixes
+
+* 适配最新版karin ([366d566](https://github.com/pohgxz/karin-plugin-picture-game/commit/366d5668b6a96c920c52723be29449cb0f31388a))
+
 ## 1.0.0 (2024-09-05)
 
 
