@@ -15,7 +15,8 @@
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
     "pub": "npm publish --access public",
-    "dev": "karin ts"
+    "dev": "tsx src/index.ts",
+    "karin": "karin"
   },
   "main": "lib/index.js",
   "devDependencies": {
@@ -26,7 +27,7 @@
     "@types/ws": "^8.5.11",
     "eslint": "^9.7.0",
     "neostandard": "^0.11.1",
-    "node-karin": "0.12.25-beta.pr.206.1-1734735433",
+    "node-karin": "1.3.14",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.5.3"
