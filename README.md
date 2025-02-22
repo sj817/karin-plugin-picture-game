@@ -21,6 +21,7 @@ pnpm add karin-plugin-picture-game -w
 ## 开发
 
 > 单独一个文件夹！！！！！
+> 开发不要放在karin下，桌面新建一个文件夹即可
 
 ```bash
 git clone https://github.com/pohgxz/karin-plugin-picture-game
