@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.5](https://github.com/pohgxz/karin-plugin-picture-game/compare/v1.0.4...v1.0.5) (2025-05-11)
+
+
+### Bug Fixes
+
+* .env ([f0290fa](https://github.com/pohgxz/karin-plugin-picture-game/commit/f0290facc479e2a697cb4541bc019aa5d42934e2))
+* 1.3.14 ([5a284a6](https://github.com/pohgxz/karin-plugin-picture-game/commit/5a284a68d17d34f89018ef6d387c194a2b4b61d1))
+* 增加三分钟倒计时 ([5c7d744](https://github.com/pohgxz/karin-plugin-picture-game/commit/5c7d74484df699b1089da1ede71bbefaf932c1a6))
+* 更新 canvas 版本 ([adab4cf](https://github.com/pohgxz/karin-plugin-picture-game/commit/adab4cf7bacb6198509d9463e5b32ee766792a27))
+* 更新 canvas 版本 ([50e11b2](https://github.com/pohgxz/karin-plugin-picture-game/commit/50e11b24a0dfa171ad5b55b275a3b6c790d20bb4))
+* 适配最新版karin ([366d566](https://github.com/pohgxz/karin-plugin-picture-game/commit/366d5668b6a96c920c52723be29449cb0f31388a))
+
 ## [1.0.4](https://github.com/pohgxz/karin-plugin-picture-game/compare/v1.0.3...v1.0.4) (2025-05-11)
 
 
