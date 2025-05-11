@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.4](https://github.com/pohgxz/karin-plugin-picture-game/compare/v1.0.3...v1.0.4) (2025-05-11)
+
+
+### Bug Fixes
+
+* 更新 canvas 版本 ([adab4cf](https://github.com/pohgxz/karin-plugin-picture-game/commit/adab4cf7bacb6198509d9463e5b32ee766792a27))
+
 ## [1.0.3](https://github.com/pohgxz/karin-plugin-picture-game/compare/v1.0.2...v1.0.3) (2025-05-11)
 
 
